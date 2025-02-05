@@ -87,7 +87,8 @@ CREATE TABLE openalex.topics (
     wikipedia_id text,
     works_count integer,
     cited_by_count integer,
-    updated_date timestamp without time zone
+    updated_date timestamp without time zone,
+    siblings json
 );
 
 --

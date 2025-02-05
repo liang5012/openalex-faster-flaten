@@ -8,8 +8,8 @@ from itertools import islice
 import glob
 
 # 全局路径配置
-SNAPSHOT_DIR = 'path/to/snapshot'
-CSV_DIR = 'path/to/csv'
+SNAPSHOT_DIR = 'D:/postgreSQL_project/test_prj/inputfile'
+CSV_DIR = 'D:/postgreSQL_project/test_prj/output'
 
 # CSV 文件配置
 csv_files = {
@@ -139,7 +139,7 @@ def coordinator(coordinator_queue, authors_queue, authors_ids_queue, counts_queu
                 print("All writers done.")
                 break
 
-    with open('d:/openalex-documentation-scripts-main/outputfile/log.json', 'w', encoding="utf-8") as f:
+    with open('D:/postgreSQL_project/test_prj/output/log.json', 'w', encoding="utf-8") as f:
         for queue in [authors_queue, authors_ids_queue, counts_queue]:
             while not queue.empty():
                 content = queue.get()
@@ -150,20 +150,21 @@ def coordinator(coordinator_queue, authors_queue, authors_ids_queue, counts_queu
 
 if __name__ == '__main__':
     # 创建多个 data_queue
-    data_queue_1 = Queue()
-    data_queue_2 = Queue()
+    data_queue_1 = Queue(500000)
+    data_queue_2 = Queue(500000)
     data_queues = [data_queue_1, data_queue_2]  # 将 data_queue 放入列表中
 
     # 创建其他队列
-    authors_queue = Queue()
-    authors_ids_queue = Queue()
-    counts_queue = Queue()
+    authors_queue = Queue(500000)
+    authors_ids_queue = Queue(500000)
+    counts_queue = Queue(500000)
 
     # 创建 coordinator_queue
     coordinator_queue = Queue()
-    input_files = glob.glob(os.path.join(SNAPSHOT_DIR, '*.gz'))
+    # input_files = glob.glob(os.path.join(SNAPSHOT_DIR, 'data', 'authors', '*', '*.gz'))
+    input_files = glob.glob(os.path.join(SNAPSHOT_DIR, '*', '*.gz'))
     # 创建 reader 进程
-    readers = Process(target=reader, args=(input_files, data_queues, coordinator_queue, 400))
+    readers = Process(target=reader, args=(input_files, data_queues, coordinator_queue, 50))
 
     # 创建 filter 进程
     filters = [
@@ -200,4 +201,4 @@ if __name__ == '__main__':
     coordinator_p.join()
 
     end = time.time()
-    print("All processes done, it took", end - start, "seconds.")
+    print("All processes done, it took", (end - start)/60, "minutes.")

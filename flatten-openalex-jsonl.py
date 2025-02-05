@@ -3,9 +3,10 @@ import glob
 import gzip
 import json
 import os
+import time
 
-SNAPSHOT_DIR = 'openalex-snapshot'
-CSV_DIR = 'csv-files'
+SNAPSHOT_DIR = 'E:/openalex_data'
+CSV_DIR = 'E:/openalex_csv'
 
 if not os.path.exists(CSV_DIR):
     os.mkdir(CSV_DIR)
@@ -316,7 +317,7 @@ def flatten_topics():
                    encoding='utf-8') as topics_csv:
         topics_writer = csv.DictWriter(topics_csv,
                                        fieldnames=csv_files['topics']['topics'][
-                                           'columns'])
+                                           'columns'],lineterminator='\n')
         topics_writer.writeheader()
 
         seen_topic_ids = set()
@@ -343,6 +344,7 @@ def flatten_topics():
                     topic['wikipedia_id'] = topic['ids'].get('wikipedia')
                     del topic['ids']
                     del topic['created_date']
+                    topic['siblings'] = json.dumps(topic['siblings'])
                     topics_writer.writerow(topic)
             files_done += 1
             if FILES_PER_ENTITY and files_done >= FILES_PER_ENTITY:
@@ -364,28 +366,28 @@ def flatten_concepts():
         concepts_writer = csv.DictWriter(
             concepts_csv,
             fieldnames=csv_files['concepts']['concepts']['columns'],
-            extrasaction='ignore'
+            extrasaction='ignore',lineterminator='\n'
         )
         concepts_writer.writeheader()
 
         ancestors_writer = csv.DictWriter(ancestors_csv, fieldnames=
-        csv_files['concepts']['ancestors']['columns'])
+        csv_files['concepts']['ancestors']['columns'],lineterminator='\n')
         ancestors_writer.writeheader()
 
         counts_by_year_writer = csv.DictWriter(counts_by_year_csv, fieldnames=
-        csv_files['concepts']['counts_by_year']['columns'])
+        csv_files['concepts']['counts_by_year']['columns'],lineterminator='\n')
         counts_by_year_writer.writeheader()
 
         ids_writer = csv.DictWriter(ids_csv,
                                     fieldnames=csv_files['concepts']['ids'][
-                                        'columns'])
+                                        'columns'],lineterminator='\n')
         ids_writer.writeheader()
 
         related_concepts_writer = csv.DictWriter(related_concepts_csv,
                                                  fieldnames=
                                                  csv_files['concepts'][
                                                      'related_concepts'][
-                                                     'columns'])
+                                                     'columns'],lineterminator='\n')
         related_concepts_writer.writeheader()
 
         seen_concept_ids = set()
@@ -460,26 +462,26 @@ def flatten_institutions():
 
         institutions_writer = csv.DictWriter(
             institutions_csv, fieldnames=file_spec['institutions']['columns'],
-            extrasaction='ignore'
+            extrasaction='ignore',lineterminator='\n'
         )
         institutions_writer.writeheader()
 
         ids_writer = csv.DictWriter(ids_csv,
-                                    fieldnames=file_spec['ids']['columns'])
+                                    fieldnames=file_spec['ids']['columns'],lineterminator='\n')
         ids_writer.writeheader()
 
         geo_writer = csv.DictWriter(geo_csv,
-                                    fieldnames=file_spec['geo']['columns'])
+                                    fieldnames=file_spec['geo']['columns'],lineterminator='\n')
         geo_writer.writeheader()
 
         associated_institutions_writer = csv.DictWriter(
             associated_institutions_csv,
             fieldnames=file_spec['associated_institutions']['columns']
-        )
+        ,lineterminator='\n')
         associated_institutions_writer.writeheader()
 
         counts_by_year_writer = csv.DictWriter(counts_by_year_csv, fieldnames=
-        file_spec['counts_by_year']['columns'])
+        file_spec['counts_by_year']['columns'],lineterminator='\n')
         counts_by_year_writer.writeheader()
 
         seen_institution_ids = set()
@@ -559,17 +561,17 @@ def flatten_publishers():
         publishers_writer = csv.DictWriter(
             publishers_csv,
             fieldnames=csv_files['publishers']['publishers']['columns'],
-            extrasaction='ignore'
+            extrasaction='ignore',lineterminator='\n'
         )
         publishers_writer.writeheader()
 
         counts_by_year_writer = csv.DictWriter(counts_by_year_csv, fieldnames=
-        csv_files['publishers']['counts_by_year']['columns'])
+        csv_files['publishers']['counts_by_year']['columns'],lineterminator='\n')
         counts_by_year_writer.writeheader()
 
         ids_writer = csv.DictWriter(ids_csv,
                                     fieldnames=csv_files['publishers']['ids'][
-                                        'columns'])
+                                        'columns'],lineterminator='\n')
         ids_writer.writeheader()
 
         seen_publisher_ids = set()
@@ -622,17 +624,17 @@ def flatten_sources():
 
         sources_writer = csv.DictWriter(
             sources_csv, fieldnames=csv_files['sources']['sources']['columns'],
-            extrasaction='ignore'
+            extrasaction='ignore',lineterminator='\n'
         )
         sources_writer.writeheader()
 
         ids_writer = csv.DictWriter(ids_csv,
                                     fieldnames=csv_files['sources']['ids'][
-                                        'columns'])
+                                        'columns'],lineterminator='\n')
         ids_writer.writeheader()
 
         counts_by_year_writer = csv.DictWriter(counts_by_year_csv, fieldnames=
-        csv_files['sources']['counts_by_year']['columns'])
+        csv_files['sources']['counts_by_year']['columns'],lineterminator='\n')
         counts_by_year_writer.writeheader()
 
         seen_source_ids = set()
@@ -703,29 +705,29 @@ def flatten_works():
                       encoding='utf-8') as related_works_csv:
 
         works_writer = init_dict_writer(works_csv, file_spec['works'],
-                                        extrasaction='ignore')
+                                        extrasaction='ignore',lineterminator='\n')
         primary_locations_writer = init_dict_writer(primary_locations_csv,
                                                     file_spec[
-                                                        'primary_locations'])
-        locations_writer = init_dict_writer(locations, file_spec['locations'])
+                                                        'primary_locations'],lineterminator='\n')
+        locations_writer = init_dict_writer(locations, file_spec['locations'],lineterminator='\n')
         best_oa_locations_writer = init_dict_writer(best_oa_locations,
                                                     file_spec[
-                                                        'best_oa_locations'])
+                                                        'best_oa_locations'],lineterminator='\n')
         authorships_writer = init_dict_writer(authorships_csv,
-                                              file_spec['authorships'])
-        biblio_writer = init_dict_writer(biblio_csv, file_spec['biblio'])
-        topics_writer = init_dict_writer(topics_csv, file_spec['topics'])
-        concepts_writer = init_dict_writer(concepts_csv, file_spec['concepts'])
+                                              file_spec['authorships'],lineterminator='\n')
+        biblio_writer = init_dict_writer(biblio_csv, file_spec['biblio'],lineterminator='\n')
+        topics_writer = init_dict_writer(topics_csv, file_spec['topics'],lineterminator='\n')
+        concepts_writer = init_dict_writer(concepts_csv, file_spec['concepts'],lineterminator='\n')
         ids_writer = init_dict_writer(ids_csv, file_spec['ids'],
-                                      extrasaction='ignore')
-        mesh_writer = init_dict_writer(mesh_csv, file_spec['mesh'])
+                                      extrasaction='ignore',lineterminator='\n')
+        mesh_writer = init_dict_writer(mesh_csv, file_spec['mesh'],lineterminator='\n')
         open_access_writer = init_dict_writer(open_access_csv,
-                                              file_spec['open_access'])
+                                              file_spec['open_access'],lineterminator='\n')
         referenced_works_writer = init_dict_writer(referenced_works_csv,
                                                    file_spec[
-                                                       'referenced_works'])
+                                                       'referenced_works'],lineterminator='\n')
         related_works_writer = init_dict_writer(related_works_csv,
-                                                file_spec['related_works'])
+                                                file_spec['related_works'],lineterminator='\n')
 
         files_done = 0
         for jsonl_file_name in glob.glob(
@@ -888,10 +890,14 @@ def init_dict_writer(csv_file, file_spec, **kwargs):
 
 
 if __name__ == '__main__':
+    # flatten_authors()
+
     flatten_topics()
-    flatten_authors()
-    flatten_concepts()
-    flatten_institutions()
-    flatten_publishers()
-    flatten_sources()
-    flatten_works()
+    # flatten_concepts()
+    # flatten_institutions()
+    # flatten_publishers()
+    # flatten_sources()
+    # start = time.time()
+    # flatten_works()
+    # end = time.time()
+    # print(f"Time taken: {(end - start) / 60}  minutes")
